@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+ notes:
+  build:
+   context: .
+  ports:
+   - 8000:8000
+   # We are exposing port 9229 so that we can attach a debugger (nodejs debugger).
+   - 9229:9229
+  environment:
+   - SERVER_PORT=8000
+   # mongo is the mongo service/container.
+   - CONNECTIONSTRING=mongodb://mongo:27017/notes
+  volumes:
+   # We are also mapping our local source code into the running container so that we can make 
+   # changes in our text editor and have those changes picked up in the container.
+   - ./:/app
+  command: npm run debug
+
+ mongo:
+  image: mongo:4.2.8
+  ports:
+   - 27017:27017
+  volumes:
+   # Host DB config: Bind mongodb to container /data/db
+   - mongodb:/data/db
+   # Host DB config: Bind mongodb_config to container /data/configdb
+   - mongodb_config:/data/configdb
+   
+volumes:
+ mongodb:
+ mongodb_config:
